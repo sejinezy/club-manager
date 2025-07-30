@@ -8,8 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-public class CrudAbstractService<DTO, ENTITY> implements CrudInterface<DTO> {
+public abstract class CrudAbstractService<DTO extends Identifiable<Long>, ENTITY> implements CrudInterface<DTO> {
 
     @Autowired(required = false)
     private Converter<DTO, ENTITY> converter;
@@ -35,11 +36,18 @@ public class CrudAbstractService<DTO, ENTITY> implements CrudInterface<DTO> {
         return Optional.ofNullable(dto);
     }
 
+    @Transactional
     @Override
     public DTO update(DTO dto) {
-        ENTITY entity = converter.toEntity(dto);
-        jpaRepository.save(entity);
+        ENTITY entity = jpaRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 데이터가 없습니다."));
+
+        converter.updateEntityFromDto(dto, entity);
+
+        jpaRepository.flush();
+
         return converter.toDto(entity);
+
     }
 
     @Override
