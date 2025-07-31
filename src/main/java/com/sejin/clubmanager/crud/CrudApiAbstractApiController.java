@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public class CrudApiAbstractApiController<DTO, ENTITY> implements CrudInterface<DTO> {
+public abstract class CrudApiAbstractApiController<DTO extends Identifiable<Long>, ENTITY> implements CrudInterface<DTO> {
 
     @Autowired(required = false)
     private CrudAbstractService<DTO, ENTITY> crudAbstractService;
