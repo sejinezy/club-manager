@@ -18,17 +18,12 @@ import lombok.ToString;
 @Builder
 @ToString
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class MemberDto implements Identifiable<Long> {
-
+public class MemberResponse implements Identifiable<Long> {
     private Long id;
-
     private String name;
-
     private String email;
-
     private Long clubId;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
+
 }
