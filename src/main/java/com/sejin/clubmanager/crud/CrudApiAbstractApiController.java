@@ -13,31 +13,31 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public abstract class CrudApiAbstractApiController<DTO extends Identifiable<Long>, ENTITY> implements CrudInterface<DTO> {
+public abstract class CrudApiAbstractApiController<REQ,RES extends Identifiable<Long>, ENTITY> implements CrudInterface<REQ,RES> {
 
     @Autowired(required = false)
-    private CrudAbstractService<DTO, ENTITY> crudAbstractService;
+    private CrudAbstractService<REQ, RES, ENTITY> crudAbstractService;
 
 
     @PostMapping
     @Override
-    public DTO create(
-            @Valid @RequestBody DTO dto) {
-        return crudAbstractService.create(dto);
+    public RES create(
+            @Valid @RequestBody REQ req) {
+        return crudAbstractService.create(req);
     }
 
     @GetMapping("/id/{id}")
     @Override
-    public Optional<DTO> read(
+    public Optional<RES> read(
             @PathVariable Long id) {
         return crudAbstractService.read(id);
     }
 
-    @PutMapping
+    @PutMapping("/id/{id}")
     @Override
-    public DTO update(
-            @Valid @RequestBody DTO dto) {
-        return crudAbstractService.update(dto);
+    public RES update(
+            @PathVariable Long id, @Valid @RequestBody REQ req) {
+        return crudAbstractService.update(id,req);
     }
 
     @DeleteMapping("/id/{id}")
@@ -49,7 +49,7 @@ public abstract class CrudApiAbstractApiController<DTO extends Identifiable<Long
 
     @GetMapping("/all")
     @Override
-    public Api<List<DTO>> list(Pageable pageable) {
+    public Api<List<RES>> list(Pageable pageable) {
         return crudAbstractService.list(pageable);
     }
 }

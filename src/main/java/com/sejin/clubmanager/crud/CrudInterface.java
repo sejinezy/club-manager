@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
-public interface CrudInterface<DTO> {
+public interface CrudInterface<REQ,RES> {
 
-    DTO create(DTO dto);
+    RES create(REQ dto);
 
-    Optional<DTO> read(Long id);
+    Optional<RES> read(Long id);
 
-    DTO update(DTO dto);
+    RES update(Long id, REQ req);
 
     void delete(Long id);
 
-    Api<List<DTO>> list(Pageable pageable);
+    Api<List<RES>> list(Pageable pageable);
 }

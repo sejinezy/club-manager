@@ -10,43 +10,38 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-public abstract class CrudAbstractService<DTO extends Identifiable<Long>, ENTITY> implements CrudInterface<DTO> {
+public abstract class CrudAbstractService<REQ,RES extends Identifiable<Long>, ENTITY> implements CrudInterface<REQ,RES> {
 
     @Autowired(required = false)
-    private Converter<DTO, ENTITY> converter;
+    private Converter<REQ, RES, ENTITY> converter;
 
     @Autowired
     private JpaRepository<ENTITY, Long> jpaRepository;
 
     @Override
-    public DTO create(DTO dto) {
-        ENTITY entity = converter.toEntity(dto);
+    public RES create(REQ req) {
+        ENTITY entity = converter.toEntity(req);
         jpaRepository.save(entity);
-        return converter.toDto(entity);
+        return converter.toResponse(entity);
     }
 
     @Override
-    public Optional<DTO> read(Long id) {
-        Optional<ENTITY> optionalEntity = jpaRepository.findById(id);
-
-        DTO dto = optionalEntity.map(
-                it -> converter.toDto(it)
-        ).orElse(null);
-
-        return Optional.ofNullable(dto);
+    @Transactional(readOnly = true)
+    public Optional<RES> read(Long id) {
+        return jpaRepository.findById(id)
+                .map(converter::toResponse);
     }
 
-    @Transactional
     @Override
-    public DTO update(DTO dto) {
-        ENTITY entity = jpaRepository.findById(dto.getId())
+    public RES update(Long id, REQ req) {
+        ENTITY entity = jpaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 데이터가 없습니다."));
 
-        converter.updateEntityFromDto(dto, entity);
+        converter.updateEntityFromRequest(req, entity);
 
         jpaRepository.flush();
 
-        return converter.toDto(entity);
+        return converter.toResponse(entity);
 
     }
 
@@ -57,28 +52,25 @@ public abstract class CrudAbstractService<DTO extends Identifiable<Long>, ENTITY
     }
 
     @Override
-    public Api<List<DTO>> list(Pageable pageable) {
-        Page<ENTITY> list = jpaRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Api<List<RES>> list(Pageable pageable) {
+        Page<ENTITY> page = jpaRepository.findAll(pageable);
 
-        Pagination pagination = Pagination.builder()
-                .page(list.getNumber())
-                .size(list.getSize())
-                .currentElements(list.getNumberOfElements())
-                .totalElements(list.getTotalElements())
-                .totalPage(list.getTotalPages())
-                .build();
-
-        List<DTO> dtoList = list.stream()
-                .map(it -> {
-                    return converter.toDto(it);
-                })
+        List<RES> body = page.stream()
+                .map(converter::toResponse)
                 .toList();
 
-        Api<List<DTO>> response = Api.<List<DTO>>builder()
-                .body(dtoList)
-                .pagination(pagination)
+        Pagination pagination = Pagination.builder()
+                .page(page.getNumber())
+                .size(page.getSize())
+                .currentElements(page.getNumberOfElements())
+                .totalElements(page.getTotalElements())
+                .totalPage(page.getTotalPages())
                 .build();
 
-        return response;
+        return Api.<List<RES>>builder()
+                .body(body)
+                .pagination(pagination)
+                .build();
     }
 }

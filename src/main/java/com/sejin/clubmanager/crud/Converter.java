@@ -1,10 +1,11 @@
 package com.sejin.clubmanager.crud;
 
-public interface Converter<DTO, ENTITY>{
+public interface Converter<REQ, RES, ENTITY>{
 
-    DTO toDto(ENTITY entity);
+    ENTITY toEntity(REQ req);
 
-    ENTITY toEntity(DTO dto);
+    void updateEntityFromRequest(REQ req, ENTITY entity);
 
-    void updateEntityFromDto(DTO dto, ENTITY entity);
+    RES toResponse(ENTITY entity);
+
 }
