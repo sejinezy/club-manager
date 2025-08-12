@@ -3,7 +3,7 @@ package com.sejin.clubmanager.club.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sejin.clubmanager.crud.Identifiable;
-import com.sejin.clubmanager.member.model.MemberDto;
+import com.sejin.clubmanager.member.model.MemberResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +21,15 @@ import lombok.ToString;
 @Builder
 @ToString
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ClubDto implements Identifiable<Long> {
+public class ClubResponse implements Identifiable<Long> {
 
     private Long id;
-
     private String name;
-
     private String description;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
+    // private Integer memberCount;
+    private List<MemberResponse> members = new ArrayList<>();
 
-    private List<MemberDto> memberEntities = new ArrayList<>();
+
 }
