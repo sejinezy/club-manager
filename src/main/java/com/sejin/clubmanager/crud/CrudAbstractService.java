@@ -1,6 +1,6 @@
 package com.sejin.clubmanager.crud;
 
-import java.util.Optional;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +24,10 @@ public abstract class CrudAbstractService<REQ,RES extends Identifiable<Long>, EN
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<RES> read(Long id) {
+    public RES read(Long id) {
         return jpaRepository.findById(id)
-                .map(converter::toResponse);
+                .map(converter::toResponse)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 데이터가 없습니다. ID=" + id));
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.sejin.clubmanager.common.Api;
 import com.sejin.clubmanager.common.Pagination;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,11 +35,11 @@ public abstract class CrudApiAbstractApiController<REQ,RES extends Identifiable<
 
     @GetMapping("/id/{id}")
     @Override
-    public Api<Optional<RES>> read(
+    public Api<RES> read(
             @PathVariable Long id) {
-        Optional<RES> res = crudAbstractService.read(id);
+        RES res = crudAbstractService.read(id);
 
-        return Api.<Optional<RES>>builder()
+        return Api.<RES>builder()
                 .resultCode(String.valueOf(HttpStatus.OK.value()))
                 .resultMessage(HttpStatus.OK.name())
                 .body(res)
