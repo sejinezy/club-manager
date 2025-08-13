@@ -6,6 +6,7 @@ import com.sejin.clubmanager.common.Api;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,12 +26,22 @@ public class ClubAdminController {
     }
 
     @GetMapping("/{id}")
-    public ClubResponse getIncludingDeleted(@PathVariable Long id) {
-        return clubAdminService.getClubIncludingDeleted(id);
+    public Api<ClubResponse> getIncludingDeleted(@PathVariable Long id) {
+        ClubResponse clubIncludingDeleted = clubAdminService.getClubIncludingDeleted(id);
+
+        return Api.<ClubResponse>builder()
+                .resultCode(String.valueOf(HttpStatus.OK.value()))
+                .resultMessage(HttpStatus.OK.name())
+                .body(clubIncludingDeleted)
+                .build();
     }
 
     @GetMapping
     public Api<List<ClubResponse>> listIncludingDeleted(Pageable pageable) {
-        return clubAdminService.listClubIncludingDeleted(pageable);
+        Api<List<ClubResponse>> listApi = clubAdminService.listClubIncludingDeleted(pageable);
+        listApi.setResultCode(String.valueOf(HttpStatus.OK.value()));
+        listApi.setResultMessage(HttpStatus.OK.name());
+
+        return listApi;
     }
 }
