@@ -47,8 +47,9 @@ public abstract class CrudAbstractService<REQ,RES extends Identifiable<Long>, EN
 
     @Override
     public void delete(Long id) {
+        preDelete(id);
         jpaRepository.deleteById(id);
-
+        postDelete(id);
     }
 
     @Override
@@ -73,4 +74,9 @@ public abstract class CrudAbstractService<REQ,RES extends Identifiable<Long>, EN
                 .pagination(pagination)
                 .build();
     }
+
+    protected void preDelete(Long id) {}
+
+    protected void postDelete(Long id){}
+
 }
