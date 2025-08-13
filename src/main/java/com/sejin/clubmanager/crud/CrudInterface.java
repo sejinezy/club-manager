@@ -7,11 +7,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface CrudInterface<REQ,RES> {
 
-    RES create(REQ dto);
+    Api<RES> create(REQ dto);
 
-    Optional<RES> read(Long id);
+    Api<Optional<RES>> read(Long id);
 
-    RES update(Long id, REQ req);
+    Api<RES> update(Long id, REQ req);
 
     void delete(Long id);
 
