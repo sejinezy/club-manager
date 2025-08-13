@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -30,6 +32,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @ToString
 @Entity(name="club")
 @EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE club SET is_deleted = 1, deleted_at = NOW() WHERE id= ?")
+@Where(clause = "is_deleted = 0")
 public class ClubEntity {
 
     @Id
@@ -49,7 +53,14 @@ public class ClubEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted",nullable = false)
+    private boolean deleted;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "club", fetch = FetchType.LAZY)
+    @Where(clause = "is_deleted = 0")
     @Builder.Default
     private List<MemberEntity> memberEntities = new ArrayList<>();
 }
