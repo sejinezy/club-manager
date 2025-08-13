@@ -1,8 +1,5 @@
 package com.sejin.clubmanager.crud;
 
-import com.sejin.clubmanager.common.Api;
-import com.sejin.clubmanager.common.Pagination;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-public abstract class CrudAbstractService<REQ,RES extends Identifiable<Long>, ENTITY> implements CrudInterface<REQ,RES> {
+public abstract class CrudAbstractService<REQ,RES extends Identifiable<Long>, ENTITY> implements CrudServicePort<REQ,RES> {
 
     @Autowired(required = false)
     private Converter<REQ, RES, ENTITY> converter;
@@ -54,25 +51,10 @@ public abstract class CrudAbstractService<REQ,RES extends Identifiable<Long>, EN
 
     @Override
     @Transactional(readOnly = true)
-    public Api<List<RES>> list(Pageable pageable) {
-        Page<ENTITY> page = jpaRepository.findAll(pageable);
+    public Page<RES> list(Pageable pageable) {
 
-        List<RES> body = page.stream()
-                .map(converter::toResponse)
-                .toList();
-
-        Pagination pagination = Pagination.builder()
-                .page(page.getNumber())
-                .size(page.getSize())
-                .currentElements(page.getNumberOfElements())
-                .totalElements(page.getTotalElements())
-                .totalPage(page.getTotalPages())
-                .build();
-
-        return Api.<List<RES>>builder()
-                .body(body)
-                .pagination(pagination)
-                .build();
+        return jpaRepository.findAll(pageable)
+                .map(converter::toResponse);
     }
 
     protected void preDelete(Long id) {}
