@@ -23,4 +23,6 @@ public interface ClubRepository extends JpaRepository<ClubEntity, Long> {
     @Modifying
     @Query(value = "UPDATE club SET is_deleted = 0 WHERE id = :id AND is_deleted = 1", nativeQuery = true)
     int restore(@Param("id") Long id);
+
+    boolean existsByIdAndDeletedFalse(Long id);
 }
