@@ -27,4 +27,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity,Long> {
 
     boolean existsByClub_IdAndDeletedFalse(Long clubId);
 
+    boolean existsByEmailAndDeletedFalse(String email);
+
+    boolean existsByEmailAndDeletedFalseAndIdNot(String email, Long id);
+
 }
