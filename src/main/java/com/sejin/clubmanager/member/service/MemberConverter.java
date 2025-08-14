@@ -4,6 +4,7 @@ import com.sejin.clubmanager.club.db.ClubEntity;
 import com.sejin.clubmanager.club.db.ClubRepository;
 import com.sejin.clubmanager.crud.Converter;
 import com.sejin.clubmanager.member.db.MemberEntity;
+import com.sejin.clubmanager.member.exception.ClubNotFoundException;
 import com.sejin.clubmanager.member.model.MemberRequest;
 import com.sejin.clubmanager.member.model.MemberResponse;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class MemberConverter implements Converter<MemberRequest, MemberResponse,
     @Override
     public MemberEntity toEntity(MemberRequest req) {
         ClubEntity club = clubRepository.findById(req.getClubId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 동아리입니다. id=" + req.getClubId()));
+                .orElseThrow(() -> new ClubNotFoundException(req.getClubId()));
 
         return MemberEntity.builder()
                 .name(req.getName())
